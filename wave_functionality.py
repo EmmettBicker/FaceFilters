@@ -9,9 +9,27 @@ import random
 global wave_speed
 global wave_frequency
 global wave_amplitude
+global wave_potential_colors
+
+
 wave_speed = 5
 wave_frequency = 0.6
 wave_amplitude = 50
+wave_potential_colors = (
+    (147, 187, 241),  # deep blue
+    (16, 85, 201),
+    (55, 121, 234),
+    (203, 231, 237),
+    (17, 50, 154),
+    (231, 69, 77)
+
+)
+
+def set_wave_potential_colors(ls):
+    global wave_potential_colors
+    wave_potential_colors = ls
+
+
 
 def set_wave_speed(number):
     global wave_speed
@@ -50,22 +68,18 @@ def get_wave_amplitude():
     global wave_amplitude
     return wave_amplitude
 
-
+global wave_on_or_off
+wave_on_or_off = True
+def turn_off_wave_fade_away():
+    global wave_on_or_off
+    wave_on_or_off = False
 
 
 def draw_waves_from_line(canvas, start_point, end_point, line_color, center_point, layer):
     
     # Set the wave properties
-    wave_potential_colors = (
-        (147, 187, 241),  # deep blue
-        (16, 85, 201),
-        (55, 121, 234),
-        (203, 231, 237),
-        (17, 50, 154),
-        (231, 69, 77)
+    global wave_potential_colors
     
-    )
-
 
     global wave_speed
     global wave_frequency
@@ -86,7 +100,7 @@ def draw_waves_from_line(canvas, start_point, end_point, line_color, center_poin
     center_angle = math.atan2(center_dy, center_dx)
 
     # Draw the waves
-    total = 10
+    total = 100
     for i in range(total):
         t = i / total
         x = int(start_point[0] + t * dx + random.random()*3)
@@ -103,7 +117,10 @@ def draw_waves_from_line(canvas, start_point, end_point, line_color, center_poin
 
 
         time_factor = time.time() - time_functionality.get_held_time()
-        thickness = 5 - int(time_factor*6)
+        if wave_on_or_off:
+            thickness = 5 - int(time_factor*6)
+        else:
+            thickness = 5
 
         if offset_factor < 0.01 and calc_trick > 0.9:
             time_functionality.update_held_time()
@@ -120,7 +137,7 @@ def draw_waves_from_line(canvas, start_point, end_point, line_color, center_poin
         thickness += layer
         thickness = max(thickness, 0)
         
-        
+        # print(wave_potential_colors)
         if thickness != 0:
             cv2.circle(canvas, (x + offset_x, y + offset_y), thickness, random.choice(wave_potential_colors), -1)
 
